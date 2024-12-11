@@ -67,5 +67,5 @@ def main():
         save_hist( residues, outdir + "residues_" + outs[k] )
         save_hist( angm, outdir + outs[k] )
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     main()
