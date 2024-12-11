@@ -1,4 +1,5 @@
 .DS_Store
+.vscode
 __pycache__
 *results*
 spectral_densities
@@ -6,4 +7,3 @@ rotamers
 *.tgz
 .ipynb_checkpoints
 paper_figures.ipynb
-.DS_Store
