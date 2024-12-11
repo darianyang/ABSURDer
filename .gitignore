@@ -6,3 +6,4 @@ rotamers
 *.tgz
 .ipynb_checkpoints
 paper_figures.ipynb
+.DS_Store
