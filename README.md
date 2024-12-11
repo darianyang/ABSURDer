@@ -23,7 +23,7 @@ Python code for calculating and reweighting NMR relaxation rates.
 1. GROMACS >= 2018.x (http://manual.gromacs.org/documentation/2018/index.html)
 
 **specdens_mapping.py**
-1. Quadric Diffusion >= 1.14 (http://comdnmr.nysbc.org/comd-nmr-dissem/comd-nmr-software/software/quadric-diffusion)
+1. Quadric Diffusion >= 1.14 (http://comdnmr.nysbc.org/comd-nmr-dissem/comd-nmr-software/software/quadric) 
 2. PDBInertia (http://comdnmr.nysbc.org/comd-nmr-dissem/comd-nmr-software/software/pdbinertia)
 
 ## Scripts
