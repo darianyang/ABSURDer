@@ -174,7 +174,7 @@ for bl in range( n_blocks_bb ):
     b       = int( bl * l_blocks_bb )
     e       = int( (bl+1) * l_blocks_bb )
     bb_tcf  = f'{out}/tcf_bb/{bl+1}_{traj_nodir_bb}.xvg'
-    process = f'{gmx} rotacf -s {tpr} -f {traj_nopbc} -o {bb_tcf} -n nh.ndx -P 2 -d -noaver -b {b} -e {e} -xvg none'
+    process = f'{gmx} rotacf -s {tpr} -f {traj_nopbc} -o {bb_tcf} -n {out}/nh.ndx -P 2 -d -noaver -b {b} -e {e} -xvg none'
 
     p        = subprocess.Popen( process, shell = True, stdin = subprocess.PIPE, stdout = subprocess.PIPE, universal_newlines = True )
     newline  = os.linesep
@@ -229,7 +229,7 @@ for bl in range( n_blocks_methyl ):
     b          = int( bl * l_blocks_methyl )
     e          = int( (bl+1) * l_blocks_methyl )
     methyl_tcf = f'{out}/tcf_methyl/{bl+1}_{traj_nodir_met}.xvg'
-    process = f'{gmx} rotacf -s {tpr} -f {rot_trans} -o {methyl_tcf} -n methyls.ndx -P 2 -d -noaver -b {b} -e {e} -xvg none'
+    process = f'{gmx} rotacf -s {tpr} -f {rot_trans} -o {methyl_tcf} -n {out}/methyls.ndx -P 2 -d -noaver -b {b} -e {e} -xvg none'
     
     p          = subprocess.Popen( process, shell = True, stdin = subprocess.PIPE, stdout = subprocess.PIPE, universal_newlines = True )
     newline    = os.linesep
