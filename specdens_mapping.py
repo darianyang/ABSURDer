@@ -168,7 +168,7 @@ def parse():
                         help = 'Path to the QUADRIC Diffusion executable.' )
     parser.add_argument( '--pdbinertia', type = str, required = True,
                         help = 'Path to the PDBInertia executable.' )
-    parser.add_argument( '--in', type = str, required = True,
+    parser.add_argument( '--i', type = str, required = True,
                         help = 'Path to input directory.' )
     parser.add_argument( '--b', type = int, required = False, default = 0,
                         help = 'Initial time (in ps) to be used in the trajectory (default: 0 ps).' )
@@ -192,7 +192,7 @@ def parse():
 
     args = parser.parse_args()
     
-    return args.quadric, args.pdbinertia, args.b, args.e, args.lblocks_bb, args.lblocks_m, args.stau, args.trajname, args.ct_lim, args.wD, args.tumbling, args.gen_mlist
+    return args.quadric, args.pdbinertia, args.i, args.b, args.e, args.lblocks_bb, args.lblocks_m, args.stau, args.trajname, args.ct_lim, args.wD, args.tumbling, args.gen_mlist
 
 
 ##########################
@@ -322,9 +322,14 @@ if tumbling == '':
                 elif (( popt1[0] < max_taum - 100 ) and ( popt1[0] > min_taum + 100 ) and (( abs( popt1[0] - start_taum) > 10 ) or ( abs(popt1[1] - start_S) > 0.1 )) and ( popt1[1] < 1.5 ) and ( popt1[1] > 0 )): 
                     tau_tmp.append( popt1[0] ) # Selected: Simple LS
                 else:
-    #                 tau_tmp.append( -1 )
-                    raise ValueError( f'Invalid fit for NH vector {tcf}.' )
-            tau_Ms.append( tau_tmp )
+                    tau_tmp.append(np.NaN) # using NaN for missing values
+                    #tau_tmp.append( -1 )
+                    #raise ValueError( f'Invalid fit for NH vector {tcf}.' )
+            # convert to np array and replace NaN with avg tau_tmp value
+            tau_tmp = np.array(tau_tmp)
+            tau_tmp[np.isnan(tau_tmp)] = np.nanmean(tau_tmp)    
+            #tau_Ms.append( list(tau_tmp) )
+            tau_Ms.append(tau_tmp) # array instead of list append
 
         mkdir( f'{in_dir}/tau' )
         with open( f'{in_dir}/tau/{trajname}{trj}_tauM.pkl', 'wb' ) as fp:
@@ -340,6 +345,10 @@ if tumbling == '':
 
     tauMs         = np.concatenate( tauMs, axis = 0 )
     tauM_av       = np.average( tauMs, axis = 0 )
+    # with a single block, use a constant error from the residue tauMs
+    # otherwise error = 0
+    if len(tauMs) == 1:
+        tauMs = tauMs[0]
     tauM_std      = np.std( tauMs, axis = 0 )
 
     tm_input      = np.empty( (len(nh_res), 3) )
@@ -352,7 +361,11 @@ if tumbling == '':
     ''' Prepare pdb with initial coordinates '''
 
     print("# Running PDBInertia")
-    process = f'{pdbinertia} -r initial.pdb {in_dir}/tau/initial.prot.inertia.pdb > {in_dir}/tau/initial.inertia.output'
+    # check and remove this file each time to prevent pdbintertia errors
+    filename = f"{in_dir}/tau/initial.prot.inertia.pdb"
+    if os.path.exists(filename):
+        os.remove(filename) 
+    process = f'{pdbinertia} -r {in_dir}/initial.pdb {in_dir}/tau/initial.prot.inertia.pdb > {in_dir}/tau/initial.inertia.output'
     p       = subprocess.Popen( process, shell = True, stdin = subprocess.PIPE, stdout = subprocess.PIPE, universal_newlines = True )
     p.communicate()
 
@@ -584,7 +597,8 @@ for l in lines:
     if '#' in l[0]:
         continue
     else:
-        methyl_labels.append( l[0] )  s
+        #methyl_labels.append( l[0] )  s
+        methyl_labels.append( l[0] )
 # Sort the arrays in methyl order:      
 rates = sort_arr( rates, methyl_labels )
 J     = sort_arr( J, methyl_labels )
